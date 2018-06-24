@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EmptyBox.ScriptRuntime
+namespace EmptyBox.ScriptRuntime.Results
 {
     public struct RefResult<TResult, TStatus> where TResult : class
     {
