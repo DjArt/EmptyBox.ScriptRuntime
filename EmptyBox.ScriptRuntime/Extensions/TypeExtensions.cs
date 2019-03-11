@@ -21,28 +21,26 @@ namespace EmptyBox.ScriptRuntime.Extensions
                 && (type.GetTypeInfo().Attributes & TypeAttributes.NotPublic) == TypeAttributes.NotPublic;
         }
 
-        public static bool CanBeNull(this Type type)
+        public static bool IsCanBeNull(this Type type)
         {
-            return type == null ? true : type.GetTypeInfo().IsClass || Nullable.GetUnderlyingType(type) != null;
+            return type == null ? true : type.IsClass || type.IsArray || type.IsInterface || type.IsPointer || Nullable.GetUnderlyingType(type) != null;
         }
 
-        public static bool CanBeNull(this TypeInfo type)
+        public static bool IsCanBeNull(this TypeInfo type)
         {
-            return type == null ? true : type.IsClass || Nullable.GetUnderlyingType(type.AsType()) != null;
+            return type == null ? true : type.IsClass || type.IsArray || type.IsInterface || type.IsPointer || Nullable.GetUnderlyingType(type) != null;
         }
 
-        public static dynamic GenerateEmptyObject(this Type type)
+        public static object GetDefault(this Type type)
         {
-            dynamic r = null;
-            if (type == typeof(string))
+            if (type.IsCanBeNull())
             {
-                r = string.Empty;
+                return null;
             }
-            else if (!type.IsArray && !type.IsAnonymousType() && !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface)
+            else
             {
-                r = Activator.CreateInstance(type);
+                return Activator.CreateInstance(type);
             }
-            return r;
         }
 
         /// <summary>
