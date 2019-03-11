@@ -8,7 +8,7 @@ using System.Text;
 
 namespace EmptyBox.ScriptRuntime.Extensions
 {
-    public static class CollectionsExtensions
+    public static class EnumerableExtensions
     {
         /// <summary>
         /// Создаёт последовательность из неповторяющихся элементов.
@@ -21,7 +21,7 @@ namespace EmptyBox.ScriptRuntime.Extensions
             List<T> result = new List<T>();
             foreach (T value in arg)
             {
-                if (!result.Exists(x => OperatorCache<T, T, bool>.Equal(x, value)))
+                if (!result.Exists(x => OperatorCache<T, T, bool>.Equality(x, value)))
                 {
                     result.Add(value);
                 }
@@ -56,40 +56,40 @@ namespace EmptyBox.ScriptRuntime.Extensions
             return _first.Count == 0 && _second.Count == 0;
         }
 
-        public static IEnumerable<T> SetExcept<T>(this IEnumerable<T> collection, IEnumerable<T> values)
+        /// <summary>
+        /// Возвращает элементы, порядковые номера которых не находятся в списке исключений.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">Исходное множество</param>
+        /// <param name="indexes">Исключённые индексы</param>
+        /// <returns></returns>
+        public static IEnumerable<T> TakeWithout<T>(this IEnumerable<T> source, IEnumerable<int> indexes)
         {
-            List<T> _values = new List<T>(values);
-            foreach (T element in collection)
+            if (indexes != null && indexes.Count() > 0)
             {
-                int index = -1;
-                if ((index = _values.FindIndex(x => element.Equals(x))) > -1)
+                IEnumerable<T> iterator()
                 {
-                    _values.RemoveAt(index);
+                    IEnumerable<int> sorted = indexes.OrderBy(x => x);
+                    IEnumerator<int> enumerator = sorted.GetEnumerator();
+                    bool lastIndex = false;
+                    for (int i0 = 0; i0 < source.Count(); i0++)
+                    {
+                        if (!lastIndex && i0 == enumerator.Current)
+                        {
+                            lastIndex = enumerator.MoveNext();
+                        }
+                        else
+                        {
+                            yield return source.ElementAt(i0);
+                        }
+                    }
+                    yield break;
                 }
-                else
-                {
-                    yield return element;
-                }
+                return iterator();
             }
-        }
-
-        public static object Cast(this IEnumerable collection, Type type)
-        {
-            MethodInfo cast = typeof(Enumerable).GetTypeInfo().GetDeclaredMethod("Cast").MakeGenericMethod(type);
-            return cast.Invoke(null, new object[] { collection });
-        }
-
-        public static IEnumerable<TOutput> Convert<TInput, TOutput>(this IEnumerable<TInput> collection)
-        {
-            return Convert(collection, typeof(TOutput)).Cast<TOutput>();
-        }
-
-        public static IEnumerable Convert<TInput>(this IEnumerable<TInput> collection, Type type)
-        {
-            Delegate convert = (Delegate)typeof(OperatorCache<,>).GetTypeInfo().MakeGenericType(new Type[] { typeof(TInput), type }).GetTypeInfo().GetDeclaredProperty("Convert").GetValue(null);
-            foreach(TInput value in collection)
+            else
             {
-                yield return convert.DynamicInvoke(new object[] { value });
+                return source;
             }
         }
     }

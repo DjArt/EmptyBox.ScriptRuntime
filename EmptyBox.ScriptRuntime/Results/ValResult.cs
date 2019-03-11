@@ -9,9 +9,9 @@ namespace EmptyBox.ScriptRuntime.Results
             return x.Result;
         }
 
-        public TResult? Result { get; private set; }
-        public TStatus Status { get; private set; }
-        public Exception Exception { get; private set; }
+        public TResult? Result { get; }
+        public TStatus Status { get; }
+        public Exception Exception { get; }
 
         public ValResult(TResult? result, TStatus status, Exception exception)
         {

@@ -44,5 +44,44 @@ namespace EmptyBox.ScriptRuntime.Extensions
             }
             return r;
         }
+
+        /// <summary>
+        /// Проверяет, является ли тип одним из вcтроенных типов. BigInteger и другие типы вернут false
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsNumericType(this Type type)
+        {
+            return type == typeof(decimal) ||
+                   type == typeof(double) ||
+                   type == typeof(float) ||
+                   type == typeof(ulong) ||
+                   type == typeof(long) ||
+                   type == typeof(uint) ||
+                   type == typeof(int) ||
+                   type == typeof(ushort) ||
+                   type == typeof(short) ||
+                   type == typeof(byte) ||
+                   type == typeof(sbyte);
+        }
+
+        /// <summary>
+        /// Проверяет, является ли тип одним из вcтроенных типов. BigInteger и другие типы вернут false
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsNumericType<T>()
+        {
+            return typeof(T) == typeof(decimal) ||
+                   typeof(T) == typeof(double) ||
+                   typeof(T) == typeof(float) ||
+                   typeof(T) == typeof(ulong) ||
+                   typeof(T) == typeof(long) ||
+                   typeof(T) == typeof(uint) ||
+                   typeof(T) == typeof(int) ||
+                   typeof(T) == typeof(ushort) ||
+                   typeof(T) == typeof(short) ||
+                   typeof(T) == typeof(byte) ||
+                   typeof(T) == typeof(sbyte);
+        }
     }
 }

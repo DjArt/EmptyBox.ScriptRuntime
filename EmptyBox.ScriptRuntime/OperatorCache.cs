@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using EmptyBox.ScriptRuntime.Extensions;
+using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace EmptyBox.ScriptRuntime
 {
@@ -33,6 +32,32 @@ namespace EmptyBox.ScriptRuntime
             }
         }
         #endregion Negate
+        
+        #region Not
+        private static Func<T1, T2> _Not;
+        private static bool _Init_Not = false;
+        public static Func<T1, T2> Not
+        {
+            get
+            {
+                if (!_Init_Not)
+                {
+                    try
+                    {
+                        var par1 = Expression.Parameter(typeof(T1), "left");
+                        Expression t = Expression.MakeUnary(ExpressionType.Not, par1, typeof(T2));
+                        _Not =  Expression.Lambda<Func<T1, T2>>(t, par1).Compile();
+                    }
+                    catch
+                    {
+                        _Not = null;
+                    }
+                    _Init_Not = true;
+                }
+                return _Not;
+            }
+        }
+        #endregion Not
 
         #region Logarithm
         private static Func<T1, T2> _Logarithm;
@@ -44,24 +69,22 @@ namespace EmptyBox.ScriptRuntime
                 if (!_Init_Logarithm)
                 {
                     Type t1 = typeof(T1);
-                    if (TypeChecker.IsNumberType(t1))
+                    if (t1.IsNumericType())
                     {
-                        _Logarithm = x => OperatorCache<double, T2>.Convert(Math.Log(OperatorCache<T1, double>.Convert(x)));
+                        _Logarithm = x => OperatorCache<double, T2>.Cast(Math.Log(OperatorCache<T1, double>.Cast(x)));
                     }
                     else
                     {
                         try
                         {
-                            //Backport from NET.Standard 1.6+
-                            //MethodInfo method = t1.GetTypeInfo().GetMethod("Sin", BindingFlags.Static | BindingFlags.Public);
                             MethodInfo method = t1.GetTypeInfo().GetDeclaredMethod("Log");
                             if (method != null)
                             {
-                                _Logarithm = x => OperatorCache<object, T2>.Convert(method.Invoke(null, new[] { OperatorCache<T1, object>.Convert(x) }));
+                                _Logarithm = x => OperatorCache<object, T2>.Cast(method.Invoke(null, new[] { OperatorCache<T1, object>.Cast(x) }));
                             }
                             else
                             {
-                                _Logarithm = x => OperatorCache<double, T2>.Convert(Math.Sin(OperatorCache<T1, double>.Convert(x)));
+                                _Logarithm = x => OperatorCache<double, T2>.Cast(Math.Sin(OperatorCache<T1, double>.Cast(x)));
                             }
                         }
                         catch
@@ -85,24 +108,22 @@ namespace EmptyBox.ScriptRuntime
                 if (!_Init_Logarithm10)
                 {
                     Type t1 = typeof(T1);
-                    if (TypeChecker.IsNumberType(t1))
+                    if (t1.IsNumericType())
                     {
-                        _Logarithm10 = x => OperatorCache<double, T2>.Convert(Math.Log10(OperatorCache<T1, double>.Convert(x)));
+                        _Logarithm10 = x => OperatorCache<double, T2>.Cast(Math.Log10(OperatorCache<T1, double>.Cast(x)));
                     }
                     else
                     {
                         try
                         {
-                            //Backport from NET.Standard 1.6+
-                            //MethodInfo method = t1.GetTypeInfo().GetMethod("Sin", BindingFlags.Static | BindingFlags.Public);
                             MethodInfo method = t1.GetTypeInfo().GetDeclaredMethod("Log10");
                             if (method != null)
                             {
-                                _Logarithm10 = x => OperatorCache<object, T2>.Convert(method.Invoke(null, new[] { OperatorCache<T1, object>.Convert(x) }));
+                                _Logarithm10 = x => OperatorCache<object, T2>.Cast(method.Invoke(null, new[] { OperatorCache<T1, object>.Cast(x) }));
                             }
                             else
                             {
-                                _Logarithm10 = x => OperatorCache<double, T2>.Convert(Math.Sin(OperatorCache<T1, double>.Convert(x)));
+                                _Logarithm10 = x => OperatorCache<double, T2>.Cast(Math.Sin(OperatorCache<T1, double>.Cast(x)));
                             }
                         }
                         catch
@@ -116,31 +137,31 @@ namespace EmptyBox.ScriptRuntime
         }
         #endregion Logarithm10
 
-        #region Convert
-        private static Func<T1, T2> _Convert;
-        private static bool _Init_Convert = false;
-        public static Func<T1, T2> Convert
+        #region Cast
+        private static Func<T1, T2> _Cast;
+        private static bool _Init_Cast = false;
+        public static Func<T1, T2> Cast
         {
             get
             {
-                if (!_Init_Convert)
+                if (!_Init_Cast)
                 {
                     try
                     {
                         var par1 = Expression.Parameter(typeof(T1), "left");
                         Expression t = Expression.MakeUnary(ExpressionType.Convert, par1, typeof(T2));
-                        _Convert = Expression.Lambda<Func<T1, T2>>(t, par1).Compile();
+                        _Cast = Expression.Lambda<Func<T1, T2>>(t, par1).Compile();
                     }
                     catch
                     {
-                        _Convert = null;
+                        _Cast = null;
                     }
-                    _Init_Convert = true;
+                    _Init_Cast = true;
                 }
-                return _Convert;
+                return _Cast;
             }
         }
-        #endregion Convert
+        #endregion Cast
 
         #region Sin
         private static Func<T1, T2> _Sin;
@@ -152,24 +173,22 @@ namespace EmptyBox.ScriptRuntime
                 if (!_Init_Sin)
                 {
                     Type t1 = typeof(T1);
-                    if (TypeChecker.IsNumberType(t1))
+                    if (t1.IsNumericType())
                     {
-                        _Sin = x => OperatorCache<double, T2>.Convert(Math.Sin(OperatorCache<T1, double>.Convert(x)));
+                        _Sin = x => OperatorCache<double, T2>.Cast(Math.Sin(OperatorCache<T1, double>.Cast(x)));
                     }
                     else
                     {
                         try
                         {
-                            //Backport from NET.Standard 1.6+
-                            //MethodInfo method = t1.GetTypeInfo().GetMethod("Sin", BindingFlags.Static | BindingFlags.Public);
                             MethodInfo method = t1.GetTypeInfo().GetDeclaredMethod("Sin");
                             if (method != null)
                             {
-                                _Sin = x => OperatorCache<object, T2>.Convert(method.Invoke(null, new[] { OperatorCache<T1, object>.Convert(x) }));
+                                _Sin = x => OperatorCache<object, T2>.Cast(method.Invoke(null, new[] { OperatorCache<T1, object>.Cast(x) }));
                             }
                             else
                             {
-                                _Sin = x => OperatorCache<double, T2>.Convert(Math.Sin(OperatorCache<T1, double>.Convert(x)));
+                                _Sin = x => OperatorCache<double, T2>.Cast(Math.Sin(OperatorCache<T1, double>.Cast(x)));
                             }
                         }
                         catch
@@ -193,24 +212,22 @@ namespace EmptyBox.ScriptRuntime
                 if (!_Init_Cos)
                 {
                     Type t1 = typeof(T1);
-                    if (TypeChecker.IsNumberType(t1))
+                    if (t1.IsNumericType())
                     {
-                        _Cos = x => OperatorCache<double, T2>.Convert(Math.Cos(OperatorCache<T1, double>.Convert(x)));
+                        _Cos = x => OperatorCache<double, T2>.Cast(Math.Cos(OperatorCache<T1, double>.Cast(x)));
                     }
                     else
                     {
                         try
                         {
-                            //Backport from NET.Standard 1.6+
-                            //MethodInfo method = t1.GetTypeInfo().GetMethod("Cos", BindingFlags.Static | BindingFlags.Public);
                             MethodInfo method = t1.GetTypeInfo().GetDeclaredMethod("Cos");
                             if (method != null)
                             {
-                                _Cos = x => OperatorCache<object, T2>.Convert(method.Invoke(null, new[] { OperatorCache<T1, object>.Convert(x) }));
+                                _Cos = x => OperatorCache<object, T2>.Cast(method.Invoke(null, new[] { OperatorCache<T1, object>.Cast(x) }));
                             }
                             else
                             {
-                                _Cos = x => OperatorCache<double, T2>.Convert(Math.Cos(OperatorCache<T1, double>.Convert(x)));
+                                _Cos = x => OperatorCache<double, T2>.Cast(Math.Cos(OperatorCache<T1, double>.Cast(x)));
                             }
                         }
                         catch
@@ -223,24 +240,6 @@ namespace EmptyBox.ScriptRuntime
             }
         }
         #endregion Cos
-
-        public static void Clear()
-        {
-            _Negate = null;
-            _Init_Negate = false;
-            _Logarithm = null;
-            _Init_Logarithm = false;
-            _Convert = null;
-            _Init_Convert = false;
-            _Sin = null;
-            _Init_Sin = false;
-            _Cos = null;
-            _Init_Cos = false;
-            _Logarithm = null;
-            _Init_Logarithm = false;
-            _Logarithm10 = null;
-            _Init_Logarithm10 = false;
-        }
     }
 
     public static class OperatorCache<T1, T2, T3>
@@ -271,6 +270,114 @@ namespace EmptyBox.ScriptRuntime
             }
         }
         #endregion Addition
+        
+        #region And
+        private static Func<T1, T2, T3> _And;
+        private static bool _Init_And = false;
+        public static Func<T1, T2, T3> And
+        {
+            get
+            {
+                if (!_Init_And)
+                {
+                    try
+                    {
+                        var par1 = Expression.Parameter(typeof(T1), "left");
+                        var par2 = Expression.Parameter(typeof(T2), "right");
+                        Expression t = Expression.MakeBinary(ExpressionType.And, par1, par2);
+                        _And = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
+                    }
+                    catch
+                    {
+                        _And = null;
+                    }
+                    _Init_And = true;
+                }
+                return _And;
+            }
+        }
+        #endregion And
+
+        #region Or
+        private static Func<T1, T2, T3> _Or;
+        private static bool _Init_Or = false;
+        public static Func<T1, T2, T3> Or
+        {
+            get
+            {
+                if (!_Init_Or)
+                {
+                    try
+                    {
+                        var par1 = Expression.Parameter(typeof(T1), "left");
+                        var par2 = Expression.Parameter(typeof(T2), "right");
+                        Expression t = Expression.MakeBinary(ExpressionType.Or, par1, par2);
+                        _Or = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
+                    }
+                    catch
+                    {
+                        _Or = null;
+                    }
+                    _Init_Or = true;
+                }
+                return _Or;
+            }
+        }
+        #endregion Or
+
+        #region XOr
+        private static Func<T1, T2, T3> _XOr;
+        private static bool _Init_XOr = false;
+        public static Func<T1, T2, T3> XOr
+        {
+            get
+            {
+                if (!_Init_XOr)
+                {
+                    try
+                    {
+                        var par1 = Expression.Parameter(typeof(T1), "left");
+                        var par2 = Expression.Parameter(typeof(T2), "right");
+                        Expression t = Expression.MakeBinary(ExpressionType.ExclusiveOr, par1, par2);
+                        _XOr = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
+                    }
+                    catch
+                    {
+                        _XOr = null;
+                    }
+                    _Init_XOr = true;
+                }
+                return _XOr;
+            }
+        }
+        #endregion XOr
+        
+        #region Modulo
+        private static Func<T1, T2, T3> _Modulo;
+        private static bool _Init_Modulo = false;
+        public static Func<T1, T2, T3> Modulo
+        {
+            get
+            {
+                if (!_Init_Modulo)
+                {
+                    try
+                    {
+                        var par1 = Expression.Parameter(typeof(T1), "left");
+                        var par2 = Expression.Parameter(typeof(T2), "right");
+                        Expression t = Expression.MakeBinary(ExpressionType.Modulo, par1, par2);
+                        _Modulo = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
+                    }
+                    catch
+                    {
+                        _Modulo = null;
+                    }
+                    _Init_Modulo = true;
+                }
+                return _Modulo;
+            }
+        }
+        #endregion Modulo
 
         #region Multiply
         private static Func<T1, T2, T3> _Multiply;
@@ -353,59 +460,59 @@ namespace EmptyBox.ScriptRuntime
         }
         #endregion Division
 
-        #region Equal
-        private static Func<T1, T2, T3> _Equal;
-        private static bool _Init_Equal = false;
-        public static Func<T1, T2, T3> Equal
+        #region Equality
+        private static Func<T1, T2, T3> _Equality;
+        private static bool _Init_Equality = false;
+        public static Func<T1, T2, T3> Equality
         {
             get
             {
-                if (!_Init_Equal)
+                if (!_Init_Equality)
                 {
                     try
                     {
                         var par1 = Expression.Parameter(typeof(T1), "left");
                         var par2 = Expression.Parameter(typeof(T2), "right");
                         Expression t = Expression.MakeBinary(ExpressionType.Equal, par1, par2);
-                        _Equal = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
+                        _Equality = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
                     }
                     catch
                     {
-                        _Equal = null;
+                        _Equality = null;
                     }
-                    _Init_Equal = true;
+                    _Init_Equality = true;
                 }
-                return _Equal;
+                return _Equality;
             }
         }
-        #endregion Equal
+        #endregion Equality
 
-        #region NotEqual
-        private static Func<T1, T2, T3> _NotEqual;
-        private static bool _Init_NotEqual = false;
-        public static Func<T1, T2, T3> NotEqual
+        #region Inequality
+        private static Func<T1, T2, T3> _Inequality;
+        private static bool _Init_Inequality = false;
+        public static Func<T1, T2, T3> Inequality
         {
             get
             {
-                if (!_Init_NotEqual)
+                if (!_Init_Inequality)
                 {
                     try
                     {
                         var par1 = Expression.Parameter(typeof(T1), "left");
                         var par2 = Expression.Parameter(typeof(T2), "right");
                         Expression t = Expression.MakeBinary(ExpressionType.NotEqual, par1, par2);
-                        _NotEqual = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
+                        _Inequality = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
                     }
                     catch
                     {
-                        _NotEqual = null;
+                        _Inequality = null;
                     }
-                    _Init_NotEqual = true;
+                    _Init_Inequality = true;
                 }
-                return _NotEqual;
+                return _Inequality;
             }
         }
-        #endregion NotEqual
+        #endregion Ineqaulity
 
         #region GreaterThan
         private static Func<T1, T2, T3> _GreaterThan;
@@ -515,66 +622,85 @@ namespace EmptyBox.ScriptRuntime
         }
         #endregion LessThanOrEqual
 
-        #region Power
-        private static Func<T1, T2, T3> _Power;
-        private static bool _Init_Power = false;
-        public static Func<T1, T2, T3> Power
+        #region Exponentiation
+        private static Func<T1, T2, T3> _Exponentiation;
+        private static bool _Init_Exponentiation = false;
+        public static Func<T1, T2, T3> Exponentiation
         {
             get
             {
-                if (!_Init_Power)
+                if (!_Init_Exponentiation)
                 {
-                    Type t1 = typeof(T1);
-                    Type t2 = typeof(T2);
-                    if (TypeChecker.IsNumberType(t1) && TypeChecker.IsNumberType(t2))
+                    try
                     {
-                        _Power = (x, y) => OperatorCache<double, T3>.Convert(Math.Pow(OperatorCache<T1, double>.Convert(x), OperatorCache<T2, double>.Convert(y)));
+                        var par1 = Expression.Parameter(typeof(T1), "left");
+                        var par2 = Expression.Parameter(typeof(T2), "right");
+                        Expression t = Expression.MakeBinary(ExpressionType.Power, par1, par2);
+                        _Exponentiation = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
                     }
-                    else
+                    catch
                     {
-                        try
-                        {
-                            //Backport from NET.Standard 1.6+
-                            //MethodInfo method = t1.GetTypeInfo().GetMethod("op_Exponentiation", BindingFlags.Static | BindingFlags.Public);
-                            //if (method == null) method = method = t1.GetTypeInfo().GetMethod("Pow", BindingFlags.Static | BindingFlags.Public, null, new[] {t1, t2}, new ParameterModifier[0]);
-                            MethodInfo method = t1.GetTypeInfo().GetDeclaredMethod("op_Exponentiation");
-                            if (method == null) method = method = t1.GetTypeInfo().GetDeclaredMethod("Pow");
-                            if (method != null)
-                            {
-                                _Power = (x, y) => OperatorCache<object, T3>.Convert(method.Invoke(null, new object[] { x, y }));
-                            }
-                            else
-                            {
-                                _Power = null;
-                            }
-                        }
-                        catch
-                        {
-                            _Power = null;
-                        }
+                        _Exponentiation = null;
                     }
+                    _Init_Exponentiation = true;
                 }
-                return _Power;
+                return _Exponentiation;
             }
         }
-        #endregion Power
-
-        public static void Clear()
+        #endregion Exponentiation
+        
+        #region LeftShift
+        private static Func<T1, T2, T3> _LeftShift;
+        private static bool _Init_LeftShift = false;
+        public static Func<T1, T2, T3> LeftShift
         {
-            _Addition = null;
-            _Init_Addition = false;
-            _Multiply = null;
-            _Init_Multiply = false;
-            _Subtraction = null;
-            _Init_Subtraction = false;
-            _Division = null;
-            _Init_Division = false;
-            _Equal = null;
-            _Init_Equal = false;
-            _NotEqual = null;
-            _Init_NotEqual = false;
-            _Power = null;
-            _Init_Power = false;
+            get
+            {
+                if (!_Init_LeftShift)
+                {
+                    try
+                    {
+                        var par1 = Expression.Parameter(typeof(T1), "left");
+                        var par2 = Expression.Parameter(typeof(T2), "right");
+                        Expression t = Expression.MakeBinary(ExpressionType.LeftShift, par1, par2);
+                        _LeftShift = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
+                    }
+                    catch
+                    {
+                        _LeftShift = null;
+                    }
+                    _Init_LeftShift = true;
+                }
+                return _LeftShift;
+            }
         }
+        #endregion LeftShift
+        
+        #region RightShift
+        private static Func<T1, T2, T3> _RightShift;
+        private static bool _Init_RightShift = false;
+        public static Func<T1, T2, T3> RightShift
+        {
+            get
+            {
+                if (!_Init_RightShift)
+                {
+                    try
+                    {
+                        var par1 = Expression.Parameter(typeof(T1), "left");
+                        var par2 = Expression.Parameter(typeof(T2), "right");
+                        Expression t = Expression.MakeBinary(ExpressionType.RightShift, par1, par2);
+                        _RightShift = Expression.Lambda<Func<T1, T2, T3>>(t, par1, par2).Compile();
+                    }
+                    catch
+                    {
+                        _RightShift = null;
+                    }
+                    _Init_RightShift = true;
+                }
+                return _RightShift;
+            }
+        }
+        #endregion RightShift
     }
 }

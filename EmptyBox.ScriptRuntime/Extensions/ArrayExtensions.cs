@@ -70,20 +70,5 @@ namespace EmptyBox.ScriptRuntime.Extensions
             Array.Copy(arr, (count - 1) * length, r[count - 1], 0, el);
             return r;
         }
-
-        public static int FindIndex<T>(this T[] arr, T val)
-        {
-            return FindIndex(arr, val, 0);
-        }
-
-        public static int FindIndex<T>(this T[] arr, T val, int startindex)
-        {
-            if (startindex >= arr.Length) throw new ArgumentException("Start index must be lower than array length.");
-            for (int i0 = startindex; i0 < arr.Length; i0++)
-            {
-                if ((dynamic)val == arr[i0]) return i0;
-            }
-            return -1;
-        }
     }
 }

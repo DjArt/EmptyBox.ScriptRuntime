@@ -4,14 +4,14 @@ namespace EmptyBox.ScriptRuntime.Results
 {
     public struct RefResult<TResult, TStatus> where TResult : class
     {
-        public static implicit operator TResult (RefResult<TResult, TStatus> x)
+        public static implicit operator TResult(RefResult<TResult, TStatus> x)
         {
             return x.Result;
         }
 
-        public TResult Result { get; private set; }
-        public TStatus Status { get; private set; }
-        public Exception Exception { get; private set; }
+        public TResult Result { get; }
+        public TStatus Status { get; }
+        public Exception Exception { get; }
 
         public RefResult(TResult result, TStatus status, Exception exception)
         {
