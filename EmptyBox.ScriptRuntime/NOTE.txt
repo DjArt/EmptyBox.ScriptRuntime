@@ -1,1 +1,0 @@
-﻿In OperatorCache.cs contained backports for NET.Standart 1.4, remove it after upgrade
